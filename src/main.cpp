@@ -27,14 +27,34 @@ float temperature;
 
 float temp = 0;
 
+char strTemperature[128];
+
+bool getter = false;
+
+string statut = "";
+
+string data = "";
+
 //Définition de la LED
 #define GPIO_PIN_LED_LOCK_ROUGE         12 //GPIO12
 
 #include "MyOled.h"
 MyOled *myOled = NULL;
 
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+#define OLED_RESET     15 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define addrI2C 0x3C
+
 #include "MyOledViewInitialisation.h"
 MyOledViewInitialisation *myOledViewInitialisation = NULL;
+
+#define nomSystem "SAC System"
+string idDuSysteme = "21546";
+
+#include "MyOledTemp.h"
+MyOledTemp *myOledTemp = NULL;
 
 std::string CallBackMessageListener(string message) {
     while(replaceAll(message, std::string("  "), std::string(" ")));
@@ -61,7 +81,9 @@ std::string CallBackMessageListener(string message) {
     }
 
     if(string(arg1.c_str()).compare(string("getData")) == 0){
-      temp = atoi(arg2.c_str());
+      //temp = atoi(arg2.c_str());
+      data = arg2.c_str();
+      getter = true;
       return(String("OK").c_str());
     }
 
@@ -83,6 +105,14 @@ void setup() {
     pinMode(GPIO_PIN_LED_LOCK_ROUGE,OUTPUT);  
 
     digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
+
+     myOled = new MyOled(&Wire, addrI2C, SCREEN_HEIGHT, SCREEN_WIDTH);
+      myOled->init();
+
+    myOledViewInitialisation = new MyOledViewInitialisation();
+    myOledViewInitialisation->setIdDuSysteme(idDuSysteme.c_str());
+    myOledViewInitialisation->setNomDuSysteme(nomSystem);
+    myOled->displayView(myOledViewInitialisation);
 
     //Connection au WifiManager
     String ssIDRandom, PASSRandom;
@@ -109,17 +139,33 @@ void setup() {
     myServer = new MyServer(80);
     myServer->initAllRoutes();
     myServer->initCallback(&CallBackMessageListener);
+    
+     myOled->clearDisplay();
 }
+
+void OledTemp(){
+  myOledTemp = new MyOledTemp();
+  myOledTemp->setText(data);
+  myOled->displayView(myOledTemp);
+  
+} 
 
 void loop() {
   // put your main code here, to run repeatedly:
 
   temperature = temperatureStub->getTemperature();
 
-  if(temperature < temp) {
-    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
-    delay(50);
+    /* if(temperature < temp) {
     digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
+    statut = "supp";
+    OledTemp();
+  } else if(temperature > temp) {
+    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
+    
+  } */
+
+  if(getter == true) {
+    OledTemp();
   }
 
   delay(1000);

@@ -51,7 +51,8 @@ void MyServer::initAllRoutes() {
     this->on("/getData", HTTP_GET, [](AsyncWebServerRequest *request) {
         AsyncResponseStream *response = request->beginResponseStream("text/html");
         AsyncWebParameter* data = request->getParam(0);
-        int temp = atoi(data->value().c_str());
+        // int temp = atoi(data->value().c_str());
+        String temp = data->value().c_str();
         String sendTo = ("button getData ");
         String actionToSend = (sendTo + temp);
         Serial.println(actionToSend);
