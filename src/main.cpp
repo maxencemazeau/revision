@@ -25,11 +25,13 @@ TemperatureStub *temperatureStub = NULL;
 
 float temperature;
 
-float temp = 0;
+int temp = 0;
 
 char strTemperature[128];
 
 bool getter = false;
+
+bool setter = false;
 
 string statut = "";
 
@@ -83,6 +85,12 @@ std::string CallBackMessageListener(string message) {
     if(string(arg1.c_str()).compare(string("getData")) == 0){
       //temp = atoi(arg2.c_str());
       data = arg2.c_str();
+      getter = true;
+      return(String("OK").c_str());
+    }
+
+    if(string(arg1.c_str()).compare(string("getValue")) == 0){
+      temp = atoi(arg2.c_str());
       getter = true;
       return(String("OK").c_str());
     }
@@ -146,8 +154,11 @@ void setup() {
 void OledTemp(){
   myOledTemp = new MyOledTemp();
   myOledTemp->setText(data);
+  myOledTemp->setInt(temp);
   myOled->displayView(myOledTemp);
   
+
+
 } 
 
 void loop() {

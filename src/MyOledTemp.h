@@ -12,11 +12,10 @@ class MyOledTemp: public MyOledView {
     
     public:
         void setText(std::string val);
-        
-
+        void setInt(int val);
     private:
         std::string text;
-
+        int nombre;
 
         void display(Adafruit_SSD1306 *adafruit);
         void update(Adafruit_SSD1306 *adafruit);

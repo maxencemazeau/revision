@@ -60,6 +60,17 @@ void MyServer::initAllRoutes() {
         request->send(200, "text/plain", "getData");
         });
 
+        this->on("/getValue", HTTP_GET, [](AsyncWebServerRequest *request) {
+        AsyncResponseStream *response = request->beginResponseStream("text/html");
+        AsyncWebParameter* value = request->getParam(0);
+        int temp = atoi(value->value().c_str());
+        String sendTo = ("button getData ");
+        String actionToSend = (sendTo + temp);
+        Serial.println(actionToSend);
+        if (ptrToCallBackFunction) (*ptrToCallBackFunction)(actionToSend.c_str()); //Exemple pour appeler une fonction CallBack
+        request->send(200, "text/plain", "getValue");
+        });
+
     this->on("/getTemperature", HTTP_GET, [](AsyncWebServerRequest *request){
         std::string repString = "";
         if(ptrToCallBackFunction) repString = (*ptrToCallBackFunction)("temperature");

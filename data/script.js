@@ -9,6 +9,16 @@ function getData() {
     
 }
 
+function getValue() {
+    var value = document.getElementById("lireInput").value;
+    document.getElementById("value2").innerHTML = value;
+    console.log(value)
+     var xhttp = new XMLHttpRequest();
+     xhttp.open("GET", "getValue?value="+value, true);
+     xhttp.send();
+    
+}
+
   setInterval(function getTemperature(){
     var xhttp = new XMLHttpRequest;
 
